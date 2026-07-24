@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>횡성 여행 가이드 | 8.15-8.17</title>
+<title>횡성 가족여행 가이드 | 8.15-8.17</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.15.0/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.15.0/firebase-firestore-compat.min.js"></script>
 <style>
   :root{
     --forest:#1F4D3A;
@@ -355,6 +357,18 @@
   .budget-section{background:var(--night);color:#fff;border-radius:28px;padding:44px clamp(20px,4vw,44px);}
   .budget-section .eyebrow{background:rgba(242,169,59,.18);color:var(--sun);}
   .budget-section .section-sub{color:rgba(255,255,255,.6);}
+  .sync-badge{
+    display:inline-flex;align-items:center;gap:5px;vertical-align:middle;margin-left:10px;
+    font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px;
+    background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);
+  }
+  .sync-badge.live{background:rgba(76,154,107,.22);color:#7EDBA0;}
+  .setup-banner{
+    margin-top:14px;background:rgba(242,169,59,.1);border:1px solid rgba(242,169,59,.35);
+    border-radius:12px;padding:12px 16px;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.75);
+  }
+  .setup-banner b{color:var(--sun);}
+  .setup-banner code{background:rgba(0,0,0,.25);padding:2px 6px;border-radius:6px;font-size:11.5px;}
   .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:30px 0;}
   @media (max-width:700px){.stat-grid{grid-template-columns:1fr;}}
   .stat-card{border-radius:16px;padding:22px;color:#fff;}
@@ -412,7 +426,7 @@
 
 <header>
   <div class="nav-wrap">
-    <div class="brand">🐄 횡성 여행 가이드</div>
+    <div class="brand">🌲 횡성가이드</div>
     <nav class="desktop-nav">
       <button type="button" data-target="home">소개</button>
       <button type="button" data-target="attractions">관광명소</button>
@@ -440,13 +454,13 @@
 <section class="hero" id="home">
   <div class="container">
     <span class="hero-tag">2026.08.15(금) — 08.17(일) · 2박 3일</span>
-    <h1>세 가족, 열한명이 함께<br>떠나는 <em>횡성 여름 여행</em></h1>
+    <h1>세 가족, 열 명이 함께<br>떠나는 <em>횡성 여름 캠프</em></h1>
     <p class="hero-desc">용인 동백에서 출발해 강원도 횡성 웰리힐리파크로. 워터파크와 한우, 그리고 아이들의 여름방학 최고의 추억을 담은 우리 가족 여행 가이드입니다.</p>
     <div class="chips">
       <div class="chip">📍 용인 동백 → 횡성 둔내</div>
       <div class="chip">🏡 웰리힐리 럭셔리 A형</div>
-      <div class="chip">👨‍👩‍👧‍👦 성인 6명 · 초딩 4명 · 베이비 1명</div>
-      <div class="chip">👪 3가족 · 총 11명</div>
+      <div class="chip">👨‍👩‍👧‍👦 성인 6 · 초1 2명 · 초3 2명</div>
+      <div class="chip">👪 3가족 · 총 10명</div>
     </div>
   </div>
 </section>
@@ -556,8 +570,11 @@
   <div class="container">
     <div class="budget-section">
       <span class="eyebrow">EXPENSE TRACKER</span>
-      <h2 class="section-title">💰 지출 관리</h2>
+      <h2 class="section-title">💰 지출 관리 <span id="syncBadge" class="sync-badge">⚪ 확인 중...</span></h2>
       <p class="section-sub">3가족 실시간 지출 현황 · 자동 1/N 계산</p>
+      <div class="setup-banner" id="setupBanner" style="display:none;">
+        ⚙️ 아직 Firebase가 연결되지 않아 <b>이 기기에만</b> 저장돼요. 다른 가족과 실시간으로 공유하려면 코드 안의 <code>firebaseConfig</code>에 기존(또는 새) Firebase 프로젝트 값을 넣어주세요. (Firestore 사용)
+      </div>
 
       <div class="stat-grid">
         <div class="stat-card total">
@@ -899,14 +916,102 @@ document.getElementById('tipGrid').innerHTML = tips.map(t=>`
   </div>
 `).join('');
 
-/* ---------------- 지출관리 ---------------- */
-let expenses = [
-  {icon:'🏡', cat:'숙박', name:'웰리힐리 럭셔리 A형 숙박비', date:'8/15~17', amount:404000},
-];
+/* ---------------- 지출관리 (Firestore 실시간 공유) ---------------- */
+let expenses = [];
+const DEFAULT_EXPENSE = {icon:'🏡', cat:'숙박', name:'웰리힐리 럭셔리 A형 숙박비', date:'8/15~17', amount:404000};
 const BUDGET = 1000000;
 const NUM_FAMILIES = 3;
 const NUM_ADULTS = 6;
 const catIcon = {'🏡 숙박':'🏡','🍽️ 식비':'🍽️','🎡 액티비티':'🎡','⛽ 교통/주유':'⛽','🛒 기타':'🛒'};
+
+// ⚠️⚠️ 여기에 본인의 Firebase 프로젝트 설정값을 붙여넣으세요 ⚠️⚠️
+// 이미 쓰고 계신 Firestore 프로젝트가 있다면 그 프로젝트의 config를 그대로 넣으면 됩니다.
+// (프로젝트 설정 톱니바퀴 > 일반 탭 > 내 앱 > SDK 설정 및 구성)
+const firebaseConfig = {
+  apiKey: "AIzaSyBvD2qJB-Ez6YNvEF54GqpoLJK6mq0kSp0",
+  authDomain: "doo-db.firebaseapp.com",
+  projectId: "doo-db",
+  storageBucket: "doo-db.firebasestorage.app",
+  messagingSenderId: "160536149571",
+  appId: "1:160536149571:web:a5ff4b8c2d8573cdbc9ef6"
+};
+
+// 기존 trips 컬렉션 구조에 맞춰 이번 여행 문서 ID를 지정합니다.
+// 예: trips/eumseong-0729-0731 처럼 trips/hoengseong-0815-0817 문서 아래 expenses 서브컬렉션을 씁니다.
+const TRIP_ID = 'hoengseong-0815-0817';
+
+let expensesCol = null;
+let firebaseReady = false;
+
+function setSyncBadge(state){
+  const badge = document.getElementById('syncBadge');
+  const banner = document.getElementById('setupBanner');
+  if(state === 'live'){
+    badge.textContent = '🟢 실시간 동기화 중';
+    badge.classList.add('live');
+    banner.style.display = 'none';
+  } else {
+    badge.textContent = '⚪ 로컬 저장 모드';
+    badge.classList.remove('live');
+    banner.style.display = 'block';
+  }
+}
+
+function initFirebase(){
+  if(!firebaseConfig.apiKey || firebaseConfig.apiKey.includes('여기에') || !firebaseConfig.projectId || firebaseConfig.projectId.includes('YOUR-PROJECT-ID')){
+    setSyncBadge('local');
+    return false;
+  }
+  try{
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    expensesCol = db.collection('trips').doc(TRIP_ID).collection('expenses');
+    firebaseReady = true;
+    setSyncBadge('live');
+    expensesCol.orderBy('createdAt').onSnapshot((snapshot)=>{
+      if(snapshot.empty){
+        expensesCol.add({...DEFAULT_EXPENSE, createdAt: Date.now()});
+        return; // 추가되면 스냅샷이 다시 트리거되어 렌더링됩니다.
+      }
+      expenses = [];
+      snapshot.forEach((doc)=>{
+        expenses.push({id: doc.id, ...doc.data()});
+      });
+      renderExpenses();
+    }, (err)=>{
+      console.warn('Firestore 연결 오류(보안 규칙을 확인하세요):', err);
+      setSyncBadge('local');
+    });
+    return true;
+  }catch(err){
+    console.warn('Firebase 초기화 실패:', err);
+    setSyncBadge('local');
+    return false;
+  }
+}
+
+async function saveExpensesLocal(){
+  try{
+    if(window.storage){
+      await window.storage.set('hoengseong-expenses', JSON.stringify(expenses), false);
+    }
+  }catch(err){ console.warn('지출 내역 로컬 저장 실패:', err); }
+}
+async function loadExpensesLocal(){
+  try{
+    if(window.storage){
+      const res = await window.storage.get('hoengseong-expenses', false);
+      if(res && res.value){
+        const saved = JSON.parse(res.value);
+        if(Array.isArray(saved) && saved.length) expenses = saved;
+      }
+    }
+    if(expenses.length === 0){ expenses = [{...DEFAULT_EXPENSE, id:'local-default'}]; }
+  }catch(err){
+    expenses = [{...DEFAULT_EXPENSE, id:'local-default'}];
+  }
+  renderExpenses();
+}
 
 function formatWon(n){ return n.toLocaleString('ko-KR') + '원'; }
 
@@ -915,7 +1020,7 @@ function renderExpenses(){
   if(expenses.length === 0){
     list.innerHTML = '<div class="exp-empty">아직 등록된 지출이 없어요. 아래에서 추가해보세요.</div>';
   } else {
-    list.innerHTML = expenses.map((e,i)=>`
+    list.innerHTML = expenses.map((e)=>`
       <div class="exp-row">
         <div class="exp-icon">${e.icon}</div>
         <div class="exp-mid">
@@ -926,7 +1031,7 @@ function renderExpenses(){
           <div class="exp-amt">${formatWon(e.amount)}</div>
           <div class="exp-split">가족당 ${formatWon(Math.round(e.amount/NUM_FAMILIES))}</div>
         </div>
-        <button class="exp-del" onclick="removeExpense(${i})">×</button>
+        <button class="exp-del" onclick="removeExpense('${e.id}')">×</button>
       </div>
     `).join('');
   }
@@ -938,25 +1043,6 @@ function renderExpenses(){
   document.getElementById('budgetFill').style.width = pct+'%';
   document.getElementById('budgetPct').textContent = pct + '% (기준 ' + formatWon(BUDGET) + ')';
 }
-async function saveExpenses(){
-  try{
-    if(window.storage){
-      await window.storage.set('hoengseong-expenses', JSON.stringify(expenses), false);
-    }
-  }catch(err){ console.warn('지출 내역 저장 실패(이 화면을 벗어나면 초기화될 수 있어요):', err); }
-}
-async function loadExpenses(){
-  try{
-    if(window.storage){
-      const res = await window.storage.get('hoengseong-expenses', false);
-      if(res && res.value){
-        const saved = JSON.parse(res.value);
-        if(Array.isArray(saved) && saved.length) expenses = saved;
-      }
-    }
-  }catch(err){ /* 저장된 내역이 없으면 기본값(숙박비) 그대로 사용 */ }
-  renderExpenses();
-}
 function addExpense(){
   const catSel = document.getElementById('expCat');
   const cat = catSel.value;
@@ -967,19 +1053,32 @@ function addExpense(){
     alert('항목명과 금액을 올바르게 입력해주세요.');
     return;
   }
-  expenses.push({icon:catIcon[cat] || '🛒', cat:cat, name:name, date:date, amount:amt});
+  const newItem = {icon:catIcon[cat] || '🛒', cat:cat, name:name, date:date, amount:amt, createdAt: Date.now()};
   document.getElementById('expName').value = '';
   document.getElementById('expAmt').value = '';
   document.getElementById('expDate').value = '';
-  renderExpenses();
-  saveExpenses();
+  if(firebaseReady && expensesCol){
+    expensesCol.add(newItem);
+  } else {
+    expenses.push({...newItem, id:'local-'+Date.now()});
+    renderExpenses();
+    saveExpensesLocal();
+  }
 }
-function removeExpense(i){
-  expenses.splice(i,1);
-  renderExpenses();
-  saveExpenses();
+function removeExpense(id){
+  if(firebaseReady && expensesCol){
+    expensesCol.doc(id).delete();
+  } else {
+    expenses = expenses.filter(e=>e.id !== id);
+    renderExpenses();
+    saveExpensesLocal();
+  }
 }
-loadExpenses();
+
+if(!initFirebase()){
+  loadExpensesLocal();
+}
 </script>
+
 </body>
 </html>
