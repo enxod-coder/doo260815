@@ -278,26 +278,29 @@
   .meal-banner .badge{background:var(--berry);color:#fff;font-weight:900;font-size:12.5px;padding:6px 12px;border-radius:999px;}
   .meal-banner p{font-size:14px;font-weight:700;color:#5b3423;}
 
-  /* ---- 카바나 예약 QR ---- */
-  .cabana-box{
-    margin-top:26px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;
-    background:linear-gradient(120deg,#0F3D57,#146B8C);color:#fff;border-radius:20px;padding:24px 28px;
+  /* ---- 예약 확인 카드 (입장권 · 카바나) ---- */
+  .res-grid{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media (max-width:760px){.res-grid{grid-template-columns:1fr;}}
+  .res-box{
+    color:#fff;border-radius:20px;padding:24px 26px;display:flex;flex-direction:column;
   }
-  .cabana-info{flex:1;min-width:220px;}
-  .cabana-badge{
+  .res-box.theme-ticket{background:linear-gradient(120deg,#164A2E,#2C8A5A);}
+  .res-box.theme-cabana{background:linear-gradient(120deg,#0F3D57,#146B8C);}
+  .res-badge{
     display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);
     color:#7EDBA0;font-weight:900;font-size:12px;padding:5px 12px;border-radius:999px;margin-bottom:10px;
+    width:fit-content;
   }
-  .cabana-info h3{font-size:19px;font-weight:900;margin-bottom:8px;}
-  .cabana-info p{font-size:13.5px;color:rgba(255,255,255,.82);line-height:1.6;margin-bottom:14px;}
-  .cabana-link{
-    display:inline-flex;align-items:center;gap:6px;background:var(--sun);color:#3a2400;
-    font-weight:900;font-size:13.5px;padding:11px 18px;border-radius:11px;text-decoration:none;
+  .res-box h3{font-size:19px;font-weight:900;margin-bottom:8px;}
+  .res-box p{font-size:13.5px;color:rgba(255,255,255,.82);line-height:1.6;margin-bottom:14px;}
+  .res-links{display:flex;flex-direction:column;gap:8px;margin-top:auto;}
+  .res-link{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--sun);color:#3a2400;
+    font-weight:900;font-size:13.5px;padding:11px 16px;border-radius:11px;text-decoration:none;
   }
-  .cabana-link:hover{background:#ffbf5c;}
+  .res-link:hover{background:#ffbf5c;}
   @media (max-width:620px){
-    .cabana-box{padding:18px;gap:16px;flex-direction:column;text-align:center;}
-    .cabana-info{text-align:left;}
+    .res-box{padding:18px;}
   }
 
   /* ---------- SCHEDULE ---------- */
@@ -504,12 +507,23 @@
     <h2 class="section-title">웰리힐리파크 액티비티</h2>
     <p class="section-sub">여름 시즌 이용 가능한 전체 액티비티 안내 · 가격·연령·예약 정보 포함. 최신 요금은 예약 전 공식 홈페이지에서 한 번 더 확인하세요.</p>
 
-    <div class="cabana-box">
-      <div class="cabana-info">
-        <span class="cabana-badge">✅ 예약 완료</span>
+    <div class="res-grid">
+      <div class="res-box theme-ticket">
+        <span class="res-badge">✅ 예약 완료</span>
+        <h3>🎟️ 워터플래닛 입장권</h3>
+        <p>8/16(일) 워터파크 입장권, 총 <strong>10장</strong>(3가족 전원)이에요. 두 건으로 나뉘어 있으니 각각 확인해서 입장 시 보여주세요.</p>
+        <div class="res-links">
+          <a class="res-link" href="https://m.wellihillipark.com/voucher/view?orderNo=202608108370512" target="_blank" rel="noopener">예약 확인 1 열기 →</a>
+          <a class="res-link" href="https://m.wellihillipark.com/voucher/view?orderNo=202608105960509" target="_blank" rel="noopener">예약 확인 2 열기 →</a>
+        </div>
+      </div>
+      <div class="res-box theme-cabana">
+        <span class="res-badge">✅ 예약 완료</span>
         <h3>🏖️ 워터플래닛 카바나 예약</h3>
         <p>8/16(일) 워터파크 이용 시 사용할 카바나 예약이에요. 아래 버튼으로 예약 확인 페이지에 들어가서 QR을 입장 시 보여주시면 됩니다. 미리 스크린샷으로 저장해두는 걸 추천해요!</p>
-        <a class="cabana-link" href="https://waterplanet.wellihillipark.com/wp/qr/ONLPOHJETKUGP" target="_blank" rel="noopener">예약 확인 페이지 열기 →</a>
+        <div class="res-links">
+          <a class="res-link" href="https://waterplanet.wellihillipark.com/wp/qr/ONLPOHJETKUGP" target="_blank" rel="noopener">예약 확인 페이지 열기 →</a>
+        </div>
       </div>
     </div>
 
