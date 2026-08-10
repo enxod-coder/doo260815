@@ -61,17 +61,20 @@
     border-bottom:1px solid rgba(255,255,255,.08);
   }
   .nav-wrap{
-    max-width:1180px;margin:0 auto;padding:0 20px;
-    display:flex;align-items:center;gap:16px;
-    height:60px;
+    max-width:1180px;margin:0 auto;padding:12px 20px 8px;
+    display:flex;align-items:center;
+    height:auto;
   }
   .brand{
     display:flex;align-items:center;gap:8px;
     color:#fff;font-weight:900;font-size:18px;white-space:nowrap;flex:0 0 auto;
   }
+  .nav-row{
+    max-width:1180px;margin:0 auto;padding:0 20px 12px;
+  }
   nav.desktop-nav{
-    display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;flex:1;min-width:0;
+    display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;width:100%;
     mask-image:linear-gradient(90deg,transparent,black 16px,black calc(100% - 16px),transparent);
   }
   nav.desktop-nav::-webkit-scrollbar{display:none;}
@@ -439,6 +442,8 @@
 <header>
   <div class="nav-wrap">
     <div class="brand">🌲 횡성가이드</div>
+  </div>
+  <div class="nav-row">
     <nav class="desktop-nav" id="mainNav">
       <button type="button" data-target="home">소개</button>
       <button type="button" data-target="activities">액티비티</button>
@@ -671,10 +676,15 @@ function goToSection(e){
   const id = this.dataset.target;
   const target = document.getElementById(id);
   if(!target) return;
-  const headerH = document.querySelector('header').offsetHeight;
-  const top = target.getBoundingClientRect().top + window.pageYOffset - headerH - 8;
-  window.scrollTo({top:top, behavior:'smooth'});
-  centerNavButton(this);
+  try{
+    const headerH = document.querySelector('header').offsetHeight;
+    const top = target.getBoundingClientRect().top + window.pageYOffset - headerH - 8;
+    window.scrollTo({top:top, behavior:'smooth'});
+  }catch(err){
+    // 혹시 스크롤 계산이 실패하면 해시 이동으로 대체
+    window.location.hash = id;
+  }
+  try{ centerNavButton(this); }catch(err){}
 }
 const navButtons = document.querySelectorAll('#mainNav button');
 navButtons.forEach(btn=>{
