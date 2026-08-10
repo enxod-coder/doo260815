@@ -62,41 +62,28 @@
   }
   .nav-wrap{
     max-width:1180px;margin:0 auto;padding:0 20px;
-    display:flex;align-items:center;justify-content:space-between;
+    display:flex;align-items:center;gap:16px;
     height:60px;
   }
   .brand{
     display:flex;align-items:center;gap:8px;
-    color:#fff;font-weight:900;font-size:18px;white-space:nowrap;
+    color:#fff;font-weight:900;font-size:18px;white-space:nowrap;flex:0 0 auto;
   }
-  nav.desktop-nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
+  nav.desktop-nav{
+    display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;flex:1;min-width:0;
+    mask-image:linear-gradient(90deg,transparent,black 16px,black calc(100% - 16px),transparent);
+  }
   nav.desktop-nav::-webkit-scrollbar{display:none;}
   nav.desktop-nav button{
-    font-family:inherit;background:none;border:none;cursor:pointer;
-    color:rgba(255,255,255,.82);text-decoration:none;font-size:14px;font-weight:700;
-    padding:10px 12px;border-radius:10px;white-space:nowrap;transition:.15s;
+    font-family:inherit;background:rgba(255,255,255,.07);border:none;cursor:pointer;
+    color:rgba(255,255,255,.82);text-decoration:none;font-size:13.5px;font-weight:700;
+    padding:9px 16px;border-radius:999px;white-space:nowrap;transition:.15s;flex:0 0 auto;
   }
-  nav.desktop-nav button:hover{background:rgba(255,255,255,.1);color:#fff;}
+  nav.desktop-nav button:hover{background:rgba(255,255,255,.14);color:#fff;}
+  nav.desktop-nav button.active{background:#fff;color:var(--forest-dark);}
   nav.desktop-nav button.highlight{background:var(--sun);color:var(--forest-dark);}
   nav.desktop-nav button.highlight:hover{background:#ffbf5c;}
-  .burger{display:none;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:4px 8px;}
-  .mobile-nav{
-    display:none;flex-direction:column;background:var(--forest-dark);
-    max-height:0;overflow:hidden;transition:max-height .25s ease;
-  }
-  .mobile-nav.open{max-height:600px;}
-  .mobile-nav button{
-    font-family:inherit;background:none;border:none;cursor:pointer;text-align:left;
-    color:rgba(255,255,255,.85);text-decoration:none;font-weight:700;font-size:15px;
-    padding:14px 22px;border-top:1px solid rgba(255,255,255,.07);width:100%;
-  }
-  .mobile-nav button.highlight{color:var(--sun);}
-
-  @media (max-width:860px){
-    nav.desktop-nav{display:none;}
-    .burger{display:block;}
-    .mobile-nav{display:flex;}
-  }
 
   /* ---------- HERO ---------- */
   .hero{
@@ -452,27 +439,16 @@
 <header>
   <div class="nav-wrap">
     <div class="brand">🌲 횡성가이드</div>
-    <nav class="desktop-nav">
+    <nav class="desktop-nav" id="mainNav">
       <button type="button" data-target="home">소개</button>
-      <button type="button" data-target="attractions">관광명소</button>
       <button type="button" data-target="activities">액티비티</button>
+      <button type="button" data-target="attractions">관광명소</button>
       <button type="button" data-target="food">맛집</button>
       <button type="button" data-target="schedule">일정·시간표</button>
       <button type="button" data-target="checklist">체크리스트</button>
       <button type="button" data-target="tips">여행팁</button>
       <button type="button" data-target="budget" class="highlight">💰 지출관리</button>
     </nav>
-    <button class="burger" id="burgerBtn" aria-label="메뉴 열기">☰</button>
-  </div>
-  <div class="mobile-nav" id="mobileNav">
-    <button type="button" data-target="home">소개</button>
-    <button type="button" data-target="attractions">관광명소</button>
-    <button type="button" data-target="activities">액티비티</button>
-    <button type="button" data-target="food">맛집</button>
-    <button type="button" data-target="schedule">일정·시간표</button>
-    <button type="button" data-target="checklist">체크리스트</button>
-    <button type="button" data-target="tips">여행팁</button>
-    <button type="button" data-target="budget" class="highlight">💰 지출관리</button>
   </div>
 </header>
 
@@ -490,18 +466,8 @@
   </div>
 </section>
 
-<!-- ================= 관광명소 ================= -->
-<section id="attractions">
-  <div class="container">
-    <span class="eyebrow">🗺️ SIGHTSEEING</span>
-    <h2 class="section-title">횡성 관광명소</h2>
-    <p class="section-sub">둔내 웰리힐리파크 주변, 이동 중 들르기 좋은 횡성 대표 명소 · 카드를 누르면 네이버 블로그 후기를 검색합니다.</p>
-    <div class="grid compact-grid" style="margin-top:30px;" id="attractionGrid"></div>
-  </div>
-</section>
-
 <!-- ================= 액티비티 ================= -->
-<section id="activities" style="background:var(--paper);">
+<section id="activities">
   <div class="container">
     <span class="eyebrow">🎡 ACTIVITY</span>
     <h2 class="section-title">웰리힐리파크 액티비티</h2>
@@ -528,6 +494,16 @@
     </div>
 
     <div class="grid compact-grid" style="margin-top:30px;" id="activityGrid"></div>
+  </div>
+</section>
+
+<!-- ================= 관광명소 ================= -->
+<section id="attractions" style="background:var(--paper);">
+  <div class="container">
+    <span class="eyebrow">🗺️ SIGHTSEEING</span>
+    <h2 class="section-title">횡성 관광명소</h2>
+    <p class="section-sub">둔내 웰리힐리파크 주변, 이동 중 들르기 좋은 횡성 대표 명소 · 카드를 누르면 네이버 블로그 후기를 검색합니다.</p>
+    <div class="grid compact-grid" style="margin-top:30px;" id="attractionGrid"></div>
   </div>
 </section>
 
@@ -685,12 +661,12 @@
 </footer>
 
 <script>
-/* ---------------- 모바일 메뉴 ---------------- */
-const burgerBtn = document.getElementById('burgerBtn');
-const mobileNav = document.getElementById('mobileNav');
-burgerBtn.addEventListener('click', ()=> mobileNav.classList.toggle('open'));
-
 /* ---------------- 탭 클릭 시 외부링크 없이 부드럽게 스크롤 ---------------- */
+function centerNavButton(btn){
+  const nav = document.getElementById('mainNav');
+  const left = btn.offsetLeft - (nav.clientWidth/2) + (btn.clientWidth/2);
+  nav.scrollTo({left:left, behavior:'smooth'});
+}
 function goToSection(e){
   const id = this.dataset.target;
   const target = document.getElementById(id);
@@ -698,11 +674,28 @@ function goToSection(e){
   const headerH = document.querySelector('header').offsetHeight;
   const top = target.getBoundingClientRect().top + window.pageYOffset - headerH - 8;
   window.scrollTo({top:top, behavior:'smooth'});
-  mobileNav.classList.remove('open');
+  centerNavButton(this);
 }
-document.querySelectorAll('nav.desktop-nav button, .mobile-nav button').forEach(btn=>{
+const navButtons = document.querySelectorAll('#mainNav button');
+navButtons.forEach(btn=>{
   btn.addEventListener('click', goToSection);
 });
+
+/* ---------------- 스크롤 위치에 따라 현재 섹션 메뉴 하이라이트 ---------------- */
+const navSections = Array.from(navButtons)
+  .map(btn=>document.getElementById(btn.dataset.target))
+  .filter(Boolean);
+const sectionObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      const id = entry.target.id;
+      navButtons.forEach(btn=>{
+        btn.classList.toggle('active', btn.dataset.target === id && !btn.classList.contains('highlight'));
+      });
+    }
+  });
+}, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+navSections.forEach(sec=>sectionObserver.observe(sec));
 
 /* ---------------- 네이버 블로그 검색 ---------------- */
 function searchNaver(query){
