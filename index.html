@@ -338,6 +338,12 @@
     margin-top:8px;background:var(--cream);border:1px dashed var(--line);border-radius:9px;
     padding:8px 11px;font-size:12px;color:var(--ink-soft);font-weight:600;
   }
+  .t-options{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
+  .t-option{
+    display:inline-flex;align-items:center;gap:4px;background:var(--sky-light);color:var(--sky);
+    font-size:12px;font-weight:800;padding:6px 12px;border-radius:999px;text-decoration:none;
+  }
+  .t-option:hover{background:var(--sky);color:#fff;}
   .day-panel{display:none;}
   .day-panel.active{display:block;}
 
@@ -872,20 +878,31 @@ document.getElementById('foodGrid').innerHTML = foods.map(f=>`
 /* ---------------- 일정 · 시간표 ---------------- */
 const schedule = {
   1:[
-    {time:'07:30', title:'🏠 용인 동백 출발 준비', desc:'짐 차량 적재 완료, 아침식사(자택/편의점), 출발 전 인원 확인. 아이스박스·수영복·여벌옷 체크.'},
-    {time:'08:00', title:'🚗 용인 동백 출발', desc:'광복절 연휴 정체 대비 이른 출발 권장.', route:'동백IC → 영동고속도로(강릉방향) → 덕평·여주·문막 경유 → 횡성IC → 둔내면 (약 110km)'},
-    {time:'09:30', title:'🍚 횡성읍 한우거리 점심', desc:'횡성IC 하차 후 읍내 한우거리 방문. 한우국밥 또는 불고기전골. 소요 약 60분(대기 포함).', route:'횡성IC 출구 → 횡성읍 방향 5분 직진 → 한우거리'},
-    {time:'11:00', title:'🏡 웰리힐리파크 도착 · 짐 맡기기', desc:'체크인(14:00) 전 짐 보관 요청(컨시어지). 리조트 내 편의시설 둘러보고 아이들 수영복으로 갈아입기.', route:'한우거리 → 5번국도 → 영동고속도로 둔내IC → 웰리힐리 (약 20분)'},
-    {time:'12:00', title:'🐄 한우테마파크 체험', desc:'체크인(14:00) 전 시간을 활용해 한우테마파크 방문. 한우 사육 과정 체험 및 시식 코너까지 아이들도 즐거워하는 코스.'},
+    {time:'06:30', title:'🏠 용인 동백 출발 준비', desc:'짐 차량 적재 완료, 출발 전 인원 확인. 아이스박스·수영복·여벌옷 체크.'},
+    {time:'07:00', title:'🚗 용인 동백 출발', desc:'광복절 연휴 정체 대비 이른 출발.', route:'동백IC → 영동고속도로(강릉방향) → 덕평·여주·문막 경유 → 횡성IC → 둔내면 (약 110km)'},
+    {time:'08:30', title:'🍚 아침식사 — 자매식당', desc:'둔내면 소재 아침 식사 장소.',
+     options:[{name:'자매식당', address:'강원 횡성군 둔내면 둔내로51번길 14', url:'https://naver.me/5GcaVnYw'}]},
+    {time:'10:00', title:'🍅 둔내고랭지토마토축제', desc:'8/14~16 둔내종합체육공원 일원에서 열리는 여름 축제. 토마토 풀장(1인 15,000원), 워터슬라이드·에어바운스, 토마토 탕후루 만들기 등 가족 체험 프로그램이 풍성해요.'},
+    {time:'11:30', title:'🏡 웰리힐리파크 도착 · 짐 맡기기', desc:'체크인(14:00) 전 짐 보관 요청(컨시어지). 리조트 내 편의시설 둘러보고 아이들 수영복으로 갈아입기.'},
     {time:'14:00', title:'🔑 체크인 & 객실 배정', desc:'럭셔리 A형 객실 입실, 짐 정리 및 수영복·용품 점검.'},
     {time:'15:30', title:'🚂 깡통열차 & 키즈파크 체험', desc:'전 연령이 함께 즐기는 가벼운 액티비티로 오후 시간 보내기.'},
     {time:'17:30', title:'🚿 숙소 복귀 & 휴식', desc:'저녁식사 전 샤워 및 정리 시간.'},
-    {time:'18:30', title:'🍢 저녁식사 (청일계곡 가든식당)', desc:'계곡 인접, 아이 친화 메뉴로 첫날 저녁 이동 최소화.'},
+    {time:'18:30', title:'🍽️ 저녁식사 후보', desc:'아래 네 곳 중 골라서 방문하면 돼요.',
+     options:[
+       {name:'해뜰애', address:'강원 횡성군 둔내면 고원로 405-6', url:'https://naver.me/xZKqOuat'},
+       {name:'마루', address:'강원 횡성군 둔내면 고원로398번길 6-20', url:'https://naver.me/xpjOxKDm'},
+       {name:'웰리반점', address:'강원 횡성군 둔내면 고원로 429', url:'https://naver.me/FM9GrMUa'},
+       {name:'장군집', address:'강원 횡성군 둔내면 두원길 55', url:'https://naver.me/GLhxRuDZ'},
+     ]},
     {time:'20:00', title:'🎶 리조트 야외 프로그램', desc:'여름 시즌 썸머 나잇 뮤직 라이브 등 야간 이벤트 진행 여부 현장 확인.'},
     {time:'21:30', title:'🌙 숙소 복귀 · 취침 준비', desc:'내일 워터파크를 위해 체력 비축, 아이들 컨디션 체크.'},
   ],
   2:[
-    {time:'07:30', title:'🥐 기상 & 아침식사', desc:'조식 대신 리조트 인근 테이크아웃 카페(예: 컴포즈커피 둔내웰리힐리점)에서 커피와 빵으로 가볍게. 워터파크 전이라 무리 없이 간단히.'},
+    {time:'07:30', title:'🍚 아침식사 후보', desc:'조식 대신 아래 두 곳 중 골라서 든든하게 챙기고 워터파크로 이동해요.',
+     options:[
+       {name:'고원곰탕', address:'강원 횡성군 둔내면 고원로 305', url:'https://naver.me/GvW25JI3'},
+       {name:'일품양평해장국 횡성둔내점', address:'강원 횡성군 둔내면 고원로 267 2호', url:'https://naver.me/xB7RpoSB'},
+     ]},
     {time:'08:45', title:'🌊 워터플래닛 오픈런 집결', desc:'인기 슬라이드 대기 최소화를 위해 개장 직전 도착. 자외선차단제 1차 도포. 카바나 예약 확인 페이지 미리 열어두고 입장 시 바로 제시(액티비티 섹션 상단 참고).', hl:true},
     {time:'09:00', title:'🎫 입장 & 락커 · 자리 배치', desc:'전자매표/사전예약 확인 후 입장, 가족 단위 락커·파라솔 확보.'},
     {time:'09:30', title:'🏊 오전 물놀이 (유수풀 · 키즈풀 중심)', desc:'초1 아이들은 키즈풀·유수풀 위주로. 자외선차단제 2시간마다 재도포.'},
@@ -898,7 +915,11 @@ const schedule = {
   ],
   3:[
     {time:'08:00', title:'☀️ 기상 & 짐 정리 시작', desc:'체크아웃 전 미리 캐리어 정리해두면 오전이 여유롭습니다.'},
-    {time:'09:00', title:'🍚 아침식사 (둔내 로컬 식당)', desc:'조식 대신 둔내면 로컬 식당에서 국밥·해장국 등으로 든든하게. 07~08시경부터 영업하는 곳이 많으니 방문 전 영업시간 확인 추천.'},
+    {time:'09:00', title:'🍚 아침식사 후보', desc:'조식 대신 아래 두 곳 중 골라서 든든하게.',
+     options:[
+       {name:'고원곰탕', address:'강원 횡성군 둔내면 고원로 305', url:'https://naver.me/GvW25JI3'},
+       {name:'일품양평해장국 횡성둔내점', address:'강원 횡성군 둔내면 고원로 267 2호', url:'https://naver.me/xB7RpoSB'},
+     ]},
     {time:'10:00', title:'🌲 치악산 둘레길 산책', desc:'체크아웃 전 리조트 인근 둘레길에서 가볍게 산책. 아이들 컨디션 고려해 짧은 코스로 다녀오기.'},
     {time:'11:00', title:'🔑 체크아웃', desc:'프론트에서 체크아웃 시간 사전 확인, 짐 차량 적재.'},
     {time:'11:30', title:'🥟 안흥찐빵 원조거리 경유', desc:'이동 중 들러 기념품·간식 구매하기 좋은 코스.', route:'둔내면 → 안흥면 (약 20분)'},
@@ -917,6 +938,7 @@ function renderTimeline(day){
         <div class="t-title">${item.title}</div>
         <div class="t-desc">${item.desc}</div>
         ${item.route?`<div class="t-route">🚗 ${item.route}</div>`:''}
+        ${item.options?`<div class="t-options">${item.options.map(o=>`<a class="t-option" href="${o.url}" target="_blank" rel="noopener" title="${o.address}">📍 ${o.name}</a>`).join('')}</div>`:''}
       </div>
     </div>
   `).join('');
